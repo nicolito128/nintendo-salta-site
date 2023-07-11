@@ -1,1 +1,1 @@
-web: bin/nintendo-salta
+worker: bin/nintendo-salta
