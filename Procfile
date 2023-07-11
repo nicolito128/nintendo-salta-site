@@ -1,0 +1,1 @@
+web: bin/nintendo-salta
