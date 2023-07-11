@@ -1,0 +1,26 @@
+<form method="post">
+    <input type="text" name="name" placeholder="Username" />
+    <input type="password" name="password" placeholder="Password" />
+    <input type="submit" value="Login" />
+</form>
+
+{{ if .token }}
+
+<script>
+    function setCookies() {
+        const t = {{.token}};
+        const e = {{.expire}};
+
+        document.cookie = `token=${t}; SameSite=None; Secure`;
+        document.cookie = `expire=${e}; SameSite=None; Secure`;
+    }
+
+    function main() {
+        setCookies();
+        location.replace(document.URL.replace("/login", "/admin"))
+    }
+
+    main();
+</script>
+
+{{ end }}
