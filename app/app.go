@@ -1,7 +1,9 @@
 package app
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
@@ -23,8 +25,8 @@ func Start() {
 	// Routes loading
 	routes.Initialize(App)
 
-	log.Println("Application started at port 3000!")
-	err := App.Listen(":3000")
+	log.Printf("Application started at port %s!", os.Getenv("PORT"))
+	err := App.Listen(fmt.Sprintf(":%s", os.Getenv("PORT")))
 	if err != nil {
 		log.Fatal(err)
 	}
