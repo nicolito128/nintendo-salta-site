@@ -7,10 +7,37 @@
 
     {{ template "partials/common/metadata" .}}
 </head>
-<body>
-    
+<body>    
     {{ template "partials/common/header" .}}
 
+    <main role="main" class="container">
+        <div id="users" hx-get="/api/users/ranking?pageSize=7" hx-trigger="load" class="hide"></div>
+
+        <div class="container title-container">
+            <h2 class="title">Tabla de Puntuaciones</h2>
+        </div>
+
+        <div class="content-box">
+            <table id="rankingTable" class="ranking-table">
+                <thead id="rankingHead" class="ranking-head">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Puntaje</th>
+                    </tr>
+                </thead>
     
+                <tbody id="rankingBody" class="ranking-body">
+                </tbody>
+    
+            </table>
+        </div>
+
+    </main>
+
+
+    {{ template "partials/common/footer" .}}
+
+    <script src="scripts/main.js"></script>
 </body>
 </html>
