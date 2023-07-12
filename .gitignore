@@ -1,5 +1,5 @@
 /bin
 /tmp
 /vendor
-database.db
+*.db
 .env
