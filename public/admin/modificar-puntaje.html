@@ -56,7 +56,7 @@
             sendData('dec');
         })
 
-        async function sendData(type) {
+        function sendData(type) {
             const input = document.getElementById('inputUser');
             const result = document.getElementById('result');
             if (input.value?.trim() == "") return;
@@ -69,43 +69,45 @@
             }
 
             let urlWithUser = url + `/${input.value}`;
+            let urlGetUser = {{.site_location}} + `/api/user/${input.value}`;
 
-            let response = await fetch(urlWithUser)
-            .then(res => res.json())
-            .then(res => res);
-           
-            if (response.status !== 'success') {
-                result.innerText = 'No existe el usuario a modificar.'
-                return;
-            }
-
-            if (response?.data.score == 0 && (type != 'inc')) {
-                result.innerHTML = 'No se puede reducir el puntaje de un participante por debajo de 0.'
-                return;
-            }
-
-            const data = JSON.stringify({ "name": input.value });
-            const xhr = new XMLHttpRequest();
-            xhr.open("PUT", urlWithUser, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onreadystatechange = function (self, e) {
-                if (this.readyState != 4) return;
-
-                if (this.status === 200) {
-                    if (type === 'inc') {
-                        result.innerHTML = `Puntaje incrementado con éxito. El nuevo puntaje para <b>${response?.data.name}</b> es de <b>${response?.data.score + 1}</b>.`
-                    } else {
-                        result.innerHTML = `Puntaje decrementado con éxito. El nuevo puntaje para <b>${response?.data.name}</b> es de <b>${response?.data.score - 1}</b>.`
-                    }
-                } else {
-                    result.innerText = 'No pudo modificarse el puntaje.'
+            fetch(urlGetUser)
+            .then(response => {
+                return response.json()
+            })
+            .then(response => {
+                if (response.status !== 'success') {
+                    result.innerText = 'No existe el usuario a modificar.'
+                    return;
                 }
-            }
 
-            xhr.send(data)
-            setTimeout(() => {
-                console.log('await...');
-            }, 2000);
+                if (response?.data.score === 0 && (type !== 'inc')) {
+                    result.innerHTML = 'No se puede reducir el puntaje de un participante por debajo de 0.'
+                    return;
+                }
+
+                const xhr = new XMLHttpRequest();
+                xhr.open("PUT", urlWithUser, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function (self, e) {
+                    if (this.readyState != 4) return;
+
+                    if (this.status === 200) {
+                        if (type === 'inc') {
+                            result.innerHTML = `Puntaje incrementado con éxito. El nuevo puntaje para <b>${response?.data.name}</b> es de <b>${response?.data.score + 1}</b>.`
+                        } else {
+                            result.innerHTML = `Puntaje decrementado con éxito. El nuevo puntaje para <b>${response?.data.name}</b> es de <b>${response?.data.score - 1}</b>.`
+                        }
+                    } else {
+                        result.innerText = 'No pudo modificarse el puntaje.'
+                    }
+                }
+
+                xhr.send()
+                setTimeout(() => {
+                    console.log('await...');
+                }, 1000);
+            });
         }
     </script>
 

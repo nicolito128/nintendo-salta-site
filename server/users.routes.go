@@ -180,7 +180,7 @@ func (s *Server) handleDecrementUserScore(ctx *fiber.Ctx) error {
 	}
 
 	u.Score--
-	if u.Score <= 0 {
+	if u.Score < 0 {
 		ctx.Status(http.StatusBadRequest)
 		return ctx.JSON(fiber.Map{"status": "fail", "error": "the score cannot be less than 0."})
 	}
