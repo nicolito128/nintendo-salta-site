@@ -32,7 +32,7 @@ func (s *Server) handleLoginForm(ctx *fiber.Ctx) error {
 	var session models.Session
 	session.Name = name
 	session.Token = token
-	session.Expire = time.Now().UnixNano() + int64(time.Hour*5)
+	session.Expire = time.Now().UnixNano() + int64(time.Hour*7)
 
 	tx := s.store.DB().Model(&models.Session{}).Create(&session)
 	if tx.Error != nil {

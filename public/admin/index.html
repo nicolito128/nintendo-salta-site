@@ -27,5 +27,36 @@
     </main>
     
     {{ template "partials/common/footer" .}}
+
+    <script type="text/javascript">
+        async function redirect() {
+            const exists = document.cookie.includes('token');
+
+            if (exists) {
+                const cookies = document.cookie;
+                const time = parseInt(cookies.slice(cookies.indexOf('expire=')).split('expire=').join(''));
+
+                if ((time - Date.now()) <= 0) {
+                    document.cookie = `token=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+                    document.cookie = `expire=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+                    return;
+                }
+
+                const url = {{.site_location}} + '/admin';
+                const res = await fetch(url);
+                if (res) {
+                    if (res?.status === 401) {
+                        document.cookie = `token=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+                        document.cookie = `expire=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+                        return;
+                    }
+
+                    location.replace(url)
+                }
+            }
+        }
+
+        redirect();
+    </script>
 </body>
 </html>
