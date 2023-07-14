@@ -6,6 +6,8 @@ comunicarse en las peticiones con la base de datos.
 package server
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/nicolito128/nintendo-salta/storage"
 )
@@ -67,5 +69,5 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handleIndexPage(ctx *fiber.Ctx) error {
-	return ctx.Render("index", nil)
+	return ctx.Render("index", fiber.Map{"site_location": os.Getenv("SITE_LOCATION")})
 }

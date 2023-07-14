@@ -27,7 +27,7 @@ func main() {
 	// Definiendo el enrutador.
 	// Se encarga de manejar las rutas del sitio y renderizar respuestas.
 	router := fiber.New(fiber.Config{Views: engine})
-	router.Static("/", "./public/static")
+	router.Static("/assets", "./public/static")
 
 	// Obteniendo el puerto de ejecución del servidor.
 	// Es posible ingresarlo por defecto desde consola.
