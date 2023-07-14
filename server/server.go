@@ -69,5 +69,5 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) handleIndexPage(ctx *fiber.Ctx) error {
-	return ctx.Render("index", fiber.Map{"site_location": os.Getenv("SITE_LOCATION")})
+	return ctx.Render("index", fiber.Map{"title": "Tabla de Puntuaciones", "site_location": os.Getenv("SITE_LOCATION")})
 }

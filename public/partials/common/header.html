@@ -6,7 +6,9 @@
     </div>
 
     <div class="header-element">
-        <img src="{{.site_location}}/assets/images/logo-wp.jpg" class="logo" />
+        <a href="{{.site_location}}">
+            <img src="{{.site_location}}/assets/images/logo-wp.jpg" class="logo" />
+        </a>
     </div>
 
     <div class="header-element">
@@ -15,3 +17,9 @@
         </a>
     </div>
 </header>
+
+{{ if .title }}
+<div>
+    <h1 class="title">{{ .title }}</h1>
+</div>
+{{ end }}
