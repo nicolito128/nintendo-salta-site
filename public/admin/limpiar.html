@@ -43,22 +43,22 @@
         const result = document.getElementById('result');
         const showTable = document.getElementById('showTable');
 
-        button.addEventListener('htmx:beforeSend', (e) => {
+        htmx.on('htmx:beforeSend', (e) => {
             const url = 'http://' + location.host + `/api/users`;
             fetch(url)
             .then(res => res.json())
             .then(json => {
                 
-            if (json && json?.status === 'success' && Array.isArray(json?.data)) {
-                if (json?.data.length === 0) {
-                    htmx.trigger('#clearButton', 'htmx:abort');
-                    showTable.innerText = `No había participantes registrados, así que fue imposible eliminar la base de datos.`;
+                if (json && json?.status === 'success' && Array.isArray(json?.data)) {
+                    if (json?.data.length === 0) {
+                        htmx.trigger('#clearButton', 'htmx:abort');
+                        showTable.innerText = `No había participantes registrados, así que fue imposible eliminar la base de datos.`;
+                    }
                 }
-            }
             });
         });
 
-        button.addEventListener('htmx:afterRequest', (e) => {
+        htmx.on('htmx:afterOnLoad', (e) => {
             const str = result.innerText;
             let table = '';
 
@@ -78,11 +78,11 @@
                         }
                     }
                     table += `</tbody></table>`;
+                } else {
+                    htmx.trigger('#clearButton', 'htmx:abort')
                 }
                 
                 showTable.innerHTML = table;
-            } else {
-                htmx.trigger('#clearButton', 'htmx:abort');
             }
 
         });
