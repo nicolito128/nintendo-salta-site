@@ -8,12 +8,6 @@
     {{ template "partials/common/metadata" .}}
 
     <link rel="stylesheet" href="styles/login.css">
-</head>
-<body>
-
-    {{ template "partials/common/header" .}}
-    
-    {{ template "partials/common/login_form" .}}
 
     <script type="tex/javascript" src="{{.stie_location}}/assets/scripts/cookies.js"></script>
     <script type="text/javascript">
@@ -33,5 +27,14 @@
 
         redirect();
     </script>
+</head>
+<body>
+
+    {{ template "partials/common/header" .}}
+    
+    {{ template "partials/common/login_form" .}}
+
+    {{ template "partials/common/footer" .}}
+
 </body>
 </html>
