@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) handleLoginPage(ctx *fiber.Ctx) error {
-	return ctx.Render("login", fiber.Map{"title": "Login"})
+	return ctx.Render("login", fiber.Map{"title": "Login", "site_location": os.Getenv("SITE_LOCATION")})
 }
 
 func (s *Server) handleLoginForm(ctx *fiber.Ctx) error {
@@ -40,9 +40,10 @@ func (s *Server) handleLoginForm(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Render("login", fiber.Map{
-		"title":  "Login",
-		"name":   name,
-		"token":  token,
-		"expire": session.Expire,
+		"title":         "Login",
+		"site_location": os.Getenv("SITE_LOCATION"),
+		"name":          name,
+		"token":         token,
+		"expire":        session.Expire,
 	})
 }
