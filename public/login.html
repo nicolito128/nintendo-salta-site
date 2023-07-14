@@ -15,20 +15,9 @@
     
     {{ template "partials/common/login_form" .}}
 
+    <script type="tex/javascript" src="{{.stie_location}}/assets/scripts/cookies.js"></script>
     <script type="text/javascript">
         async function redirect() {
-            const exists = document.cookie.includes('token');
-
-            if (exists) {
-                const cookies = document.cookie;
-                const time = parseInt(cookies.slice(cookies.indexOf('expire=')).split('expire=').join(''));
-
-                if ((time - Date.now()) <= 0) {
-                    document.cookie = `token=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-                    document.cookie = `expire=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-                    return;
-                }
-
                 const url = {{.site_location}} + '/admin';
                 const res = await fetch(url);
                 if (res) {
@@ -40,7 +29,6 @@
 
                     location.replace(url)
                 }
-            }
         }
 
         redirect();
