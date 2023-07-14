@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/nicolito128/nintendo-salta/models"
@@ -17,7 +18,7 @@ type SqliteStorage struct {
 var _ Storage = &SqliteStorage{}
 
 func NewSqliteStorage(storageName string) *SqliteStorage {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fmt.Sprintf("%s.db", storageName)), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database")
 	}

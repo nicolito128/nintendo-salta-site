@@ -37,7 +37,7 @@ func main() {
 	listenAddr := fmt.Sprintf(":%s", *port)
 
 	// Creando un nuevo acceso a la base de datos.
-	store := storage.NewSqliteStorage("database")
+	store := storage.NewPostgreSQLStorage()
 
 	// Iniciando la aplicación
 	app := server.NewServer(listenAddr, router, store)
