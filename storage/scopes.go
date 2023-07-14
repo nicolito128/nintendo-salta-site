@@ -36,8 +36,8 @@ func Paginate(ctx *fiber.Ctx) (func(db *gorm.DB) *gorm.DB, error) {
 		size = 10
 	}
 
-	ctx.Set("page", fmt.Sprint(page))
-	ctx.Set("page_size", fmt.Sprint(size))
+	ctx.Set("X-Page", fmt.Sprint(page))
+	ctx.Set("X-Page-Size", fmt.Sprint(size))
 	return func(db *gorm.DB) *gorm.DB {
 		// Where to start looking for the database rows
 		offset := (page - 1) * size

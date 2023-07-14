@@ -13,12 +13,32 @@ import (
 func (s *Server) handleUsers(ctx *fiber.Ctx) error {
 	var users []models.User
 
-	err := s.store.DB().Model(&models.User{}).Find(&users).Error
+	scope, err := storage.Paginate(ctx)
+	if err != nil {
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	res := s.store.DB().Scopes(scope)
+	if res.Error != nil {
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": res.Error.Error()})
+	}
+
+	err = res.Model(&models.User{}).Find(&users).Error
 	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
 		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
+	var count int64
+	err = s.store.DB().Model(&models.User{}).Count(&count).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	ctx.Set("X-Total-Count", fmt.Sprint(count))
 	ctx.Status(http.StatusOK)
 	return ctx.JSON(fiber.Map{"status": "success", "data": users})
 }
@@ -44,6 +64,14 @@ func (s *Server) handleUsersRanking(ctx *fiber.Ctx) error {
 		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
+	var count int64
+	err = s.store.DB().Model(&models.User{}).Count(&count).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	ctx.Set("X-Total-Count", fmt.Sprint(count))
 	ctx.Status(http.StatusOK)
 	return ctx.JSON(fiber.Map{"status": "success", "data": users})
 }
