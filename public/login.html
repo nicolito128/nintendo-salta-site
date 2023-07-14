@@ -16,17 +16,16 @@
     {{ template "partials/common/login_form" .}}
     
     <script type="text/javascript">
-        const exists = document.cookie.includes("token")
-        const url = 'http://' + location.host + '/admin'
+        function main() {
+            const exists = document.cookie.includes("token")
+            const url = {{.site_location}} + '/admin'
 
-        if (exists) {
-            fetch(url)
-            .then(res => {
-                if (res && res.status !== 500 && res.status !== 400 && res.status !== 401) {
-                    location.replace(document.URL.replace("/login", "/admin"))
-                }
-            })
+            if (exists) {
+                location.replace(url)
+            }
         }
+
+        main();
     </script>
 </body>
 </html>

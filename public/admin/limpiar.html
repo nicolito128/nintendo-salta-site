@@ -44,7 +44,7 @@
         const showTable = document.getElementById('showTable');
 
         htmx.on('htmx:beforeSend', (e) => {
-            const url = 'http://' + location.host + `/api/users`;
+            const url = {{ .site_location }} + `/api/users`;
             fetch(url)
             .then(res => res.json())
             .then(json => {

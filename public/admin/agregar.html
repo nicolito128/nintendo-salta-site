@@ -50,7 +50,7 @@
             const input = document.getElementById('inputNewUser');
             const result = document.getElementById('result');
             if (input.value?.trim() == "") return;
-            let url = 'http://' + location.host + '/api/user';
+            let url = {{.site_location}} + '/api/user';
 
             fetch(url + `/${input.value}`).then(res => {
                 res.text().then(txt => {

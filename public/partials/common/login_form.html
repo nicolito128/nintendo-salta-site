@@ -30,7 +30,7 @@
 
     function main() {
         setCookies();
-        location.replace(document.URL.replace("/login", "/admin"))
+        location.replace({{.site_location}} + '/admin');
     }
 
     main();

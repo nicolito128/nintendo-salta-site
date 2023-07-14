@@ -60,17 +60,17 @@
             const input = document.getElementById('inputUser');
             const result = document.getElementById('result');
             if (input.value?.trim() == "") return;
-            let url = '';
+            let url = {{.site_location}};
 
             if (type === 'inc') {
-                url = 'http://' + location.host + '/api/user/inc';
+                url += '/api/user/inc';
             } else {
-                url = 'http://' + location.host + '/api/user/dec';
+                url += '/api/user/dec';
             }
 
             let urlWithUser = url + `/${input.value}`;
 
-            let response = await fetch('http://' + location.host + '/api/user/' + input.value)
+            let response = await fetch(urlWithUser)
             .then(res => res.json())
             .then(res => res);
            
