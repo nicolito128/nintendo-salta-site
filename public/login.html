@@ -8,8 +8,14 @@
     {{ template "partials/common/metadata" .}}
 
     <link rel="stylesheet" href="styles/login.css">
+</head>
+<body>
 
-    <script>
+    {{ template "partials/common/header" .}}
+    
+    {{ template "partials/common/login_form" .}}
+    
+    <script type="text/javascript">
         const exists = document.cookie.includes("token")
         const url = 'http://' + location.host + '/admin'
 
@@ -22,12 +28,5 @@
             })
         }
     </script>
-</head>
-<body>
-
-    {{ template "partials/common/header" .}}
-    
-    {{ template "partials/common/login_form" .}}
-    
 </body>
 </html>
