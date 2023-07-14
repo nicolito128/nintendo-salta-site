@@ -29,12 +29,22 @@ func NewServer(listenAddr string, router *fiber.App, store storage.Storage) *Ser
 func (s *Server) Start() error {
 	// Groups
 	root := s.router.Group("/")
+	admin := s.router.Group("/admin")
 	api := s.router.Group("/api")
+	render := s.router.Group("/render")
 
 	// GET
 	root.Get("/", s.handleIndexPage)
 	root.Get("/login", s.handleLoginPage)
-	root.Get("/admin", onlyAdmin(s.store, s.handleAdminPage))
+	admin.Get("/", onlyAdmin(s.store, s.handleAdminPage))
+	admin.Get("/buscar", onlyAdmin(s.store, s.handleAdminSearchUserPage))
+	admin.Get("/agregar", onlyAdmin(s.store, s.handleAdminAddUserPage))
+	admin.Get("/modificar-puntaje", onlyAdmin(s.store, s.handleAdminScorePage))
+	admin.Get("/eliminar", onlyAdmin(s.store, s.handleAdminDeletePage))
+	admin.Get("/limpiar", onlyAdmin(s.store, s.handleAdminClearPage))
+
+	render.Get("/ranking", s.handleRenderRanking)
+	render.Get("/search/:name", s.handleRenderSearch)
 
 	api.Get("/users", s.handleUsers)
 	api.Get("/users/ranking", s.handleUsersRanking)
@@ -47,6 +57,7 @@ func (s *Server) Start() error {
 
 	// Delete
 	api.Delete("/user/:name", s.handleDeleteUser)
+	api.Delete("/users", s.handleClearUsers)
 
 	// Put
 	api.Put("/user/inc/:name", s.handleIncrementUserScore)
@@ -57,8 +68,4 @@ func (s *Server) Start() error {
 
 func (s *Server) handleIndexPage(ctx *fiber.Ctx) error {
 	return ctx.Render("index", nil)
-}
-
-func (s *Server) handleAdminPage(ctx *fiber.Ctx) error {
-	return ctx.Render("admin", fiber.Map{"title": "Admin Panel"})
 }

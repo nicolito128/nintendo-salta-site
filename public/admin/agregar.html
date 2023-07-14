@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .title }} - Nintendo Salta</title>
+
+    {{ template "partials/common/metadata" .}}
+    <link rel="stylesheet" href="/styles/admin.css">
+    <link rel="stylesheet" href="/styles/login.css">
+</head>
+<body>
+    {{ template "partials/common/header" .}}
+
+    <div>
+        <h1 class="title">{{ .title }}</h1>
+    </div>
+
+    <main role="main" class="container content-box">
+
+        <form>
+
+            <div class="form-body">
+                <div class="form-element">
+                    <input type="text" id="inputNewUser" name="name" placeholder="Nombre del participante" />
+                </div>
+
+                <div class="form-element submit">
+                    <button type="button" id="submitButton" class="red-button">Agregar</button>
+                </div>
+            </div>
+
+        </form>
+
+        <div id="result" class="result-container"></div>
+
+    </main>
+
+
+    {{ template "partials/common/footer" .}}
+
+    <script>
+        const submit = document.getElementById('submitButton');
+
+        submit.addEventListener('click', (e) => {
+            sendData();
+        })
+
+        function sendData() {
+            const input = document.getElementById('inputNewUser');
+            const result = document.getElementById('result');
+            if (input.value?.trim() == "") return;
+            let url = 'http://' + location.host + '/api/user';
+
+            fetch(url + `/${input.value}`).then(res => {
+                res.text().then(txt => {
+
+                    const response = JSON.parse(txt)
+                    if (response.status != 'fail') {
+                        result.innerText = 'No pudo cargarse el usuario.'
+                        return;
+                    }
+
+                    const data = JSON.stringify({ "name": input.value });
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.onreadystatechange = function () {
+                        if (this.readyState != 4) return;
+
+                        if (this.status == 201) {
+                            result.innerText = 'Nuevo usuario cargado con éxito.'
+                        } else {
+                            result.innerText = 'No pudo cargarse el nuevo usuario.'
+                        }
+                    }
+
+                    xhr.send(data);
+
+                    setTimeout(() => {
+                        console.log('await...');
+                    }, 2000);
+                })
+            })
+        }
+    </script>
+
+</body>
+</html>

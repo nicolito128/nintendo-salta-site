@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .title }} - Nintendo Salta</title>
+
+    {{ template "partials/common/metadata" .}}
+    <link rel="stylesheet" href="/styles/admin.css">
+    <link rel="stylesheet" href="/styles/login.css">
+</head>
+<body>
+    {{ template "partials/common/header" .}}
+
+    <div>
+        <h1 class="title">{{ .title }}</h1>
+    </div>
+
+    <main role="main" class="container content-box">
+
+        <form>
+
+            <div class="form-body">
+                <div class="form-element">
+                    <input type="text" id="inputUser" name="name" placeholder="Nombre del participante" />
+                </div>
+
+                <div class="form-element submit">
+                    <button type="button" id="incButton" class="red-button">Incrementar</button>
+                </div>
+
+                <div class="form-element submit">
+                    <button type="button" id="decButton" class="red-button">Decrementar</button>
+                </div>
+            </div>
+
+        </form>
+
+        <div id="result" class="result-container"></div>
+
+    </main>
+
+
+    {{ template "partials/common/footer" .}}
+
+    <script>
+        const incButton = document.getElementById('incButton');
+        const decButton = document.getElementById('decButton');
+
+        incButton.addEventListener('click', (e) => {
+            sendData('inc');
+
+        })
+
+        decButton.addEventListener('click', (e) => {
+            sendData('dec');
+        })
+
+        async function sendData(type) {
+            const input = document.getElementById('inputUser');
+            const result = document.getElementById('result');
+            if (input.value?.trim() == "") return;
+            let url = '';
+
+            if (type === 'inc') {
+                url = 'http://' + location.host + '/api/user/inc';
+            } else {
+                url = 'http://' + location.host + '/api/user/dec';
+            }
+
+            let urlWithUser = url + `/${input.value}`;
+
+            let response = await fetch('http://' + location.host + '/api/user/' + input.value)
+            .then(res => res.json())
+            .then(res => res);
+           
+            if (response.status !== 'success') {
+                result.innerText = 'No existe el usuario a modificar.'
+                return;
+            }
+
+            if (response?.data.score == 0 && (type != 'inc')) {
+                result.innerHTML = 'No se puede reducir el puntaje de un participante por debajo de 0.'
+                return;
+            }
+
+            const data = JSON.stringify({ "name": input.value });
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", urlWithUser, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function (self, e) {
+                if (this.readyState != 4) return;
+
+                if (this.status === 200) {
+                    if (type === 'inc') {
+                        result.innerHTML = `Puntaje incrementado con éxito. El nuevo puntaje para <b>${response?.data.name}</b> es de <b>${response?.data.score + 1}</b>.`
+                    } else {
+                        result.innerHTML = `Puntaje decrementado con éxito. El nuevo puntaje para <b>${response?.data.name}</b> es de <b>${response?.data.score - 1}</b>.`
+                    }
+                } else {
+                    result.innerText = 'No pudo modificarse el puntaje.'
+                }
+            }
+
+            xhr.send(data)
+            setTimeout(() => {
+                console.log('await...');
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>

@@ -13,10 +13,10 @@ import (
 func (s *Server) handleUsers(ctx *fiber.Ctx) error {
 	var users []models.User
 
-	tx := storage.GetAll(ctx, s.store, &users)
-	if tx.Error != nil {
+	err := s.store.DB().Model(&models.User{}).Find(&users).Error
+	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	ctx.Status(http.StatusOK)
@@ -29,19 +29,19 @@ func (s *Server) handleUsersRanking(ctx *fiber.Ctx) error {
 	scope, err := storage.Paginate(ctx)
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": err})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	res := s.store.DB().Scopes(scope)
 	if res.Error != nil {
 		ctx.Status(http.StatusBadRequest)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": res.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": res.Error.Error()})
 	}
 
-	res = res.Model(&models.User{}).Order("score DESC").Find(&users)
+	err = res.Model(&models.User{}).Order("score DESC").Find(&users).Error
 	if res.Error != nil {
 		ctx.Status(http.StatusNotFound)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": res.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	ctx.Status(http.StatusOK)
@@ -56,10 +56,10 @@ func (s *Server) handleUserByName(ctx *fiber.Ctx) error {
 	}
 
 	var u models.User
-	tx := s.store.DB().Model(&models.User{}).Where("name = ?", name).First(&u)
-	if tx.Error != nil {
+	err := s.store.DB().Model(&models.User{}).Where("name = ?", name).First(&u).Error
+	if err != nil {
 		ctx.Status(http.StatusNotFound)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	ctx.Status(http.StatusOK)
@@ -71,14 +71,27 @@ func (s *Server) handleNewUser(ctx *fiber.Ctx) error {
 
 	err := json.Unmarshal(ctx.Body(), &user)
 	if err != nil {
-		return ctx.JSON(fiber.Map{"status": http.StatusBadRequest, "error": err})
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err})
+	}
+
+	var exists int64
+	err = s.store.DB().Model(&models.User{}).Where("name = ?", user.Name).Count(&exists).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	if exists == 1 {
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": "the user already exist"})
 	}
 
 	u := &models.User{Name: user.Name}
-	tx := s.store.DB().Model(&models.User{}).Create(&u)
-	if tx.Error != nil {
+	err = s.store.DB().Model(&models.User{}).Create(&u).Error
+	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	ctx.Status(http.StatusCreated)
@@ -110,18 +123,30 @@ func (s *Server) handleIncrementUserScore(ctx *fiber.Ctx) error {
 		return ctx.JSON(fiber.Map{"status": "fail", "error": "empty name param"})
 	}
 
-	u := models.User{Name: name}
-	tx := s.store.DB().Model(&models.User{}).Where("name = ?", name).First(&u)
-	if tx.Error != nil {
+	var exists int64
+	err := s.store.DB().Model(&models.User{}).Where("name = ?", name).Count(&exists).Error
+	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err})
+	}
+
+	if exists == 0 {
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": "the user doesn't exist"})
+	}
+
+	u := models.User{Name: name}
+	err = s.store.DB().Model(&models.User{}).Where("name = ?", name).First(&u).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	u.Score++
-	tx = s.store.DB().Model(&models.User{}).Where("name = ?", name).Update("score", u.Score)
-	if tx.Error != nil {
+	err = s.store.DB().Model(&models.User{}).Where("name = ?", name).Update("score", u.Score).Error
+	if err != nil {
 		ctx.Status(http.StatusNotFound)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	ctx.Status(http.StatusOK)
@@ -135,20 +160,56 @@ func (s *Server) handleDecrementUserScore(ctx *fiber.Ctx) error {
 		return ctx.JSON(fiber.Map{"status": "fail", "error": "empty name param"})
 	}
 
-	u := models.User{Name: name}
-	tx := s.store.DB().Model(&models.User{}).Where("name = ?", name).First(&u)
-	if tx.Error != nil {
+	var exists int64
+	err := s.store.DB().Model(&models.User{}).Where("name = ?", name).Count(&exists).Error
+	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	if exists == 0 {
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": "the user doesn't exist"})
+	}
+
+	u := models.User{Name: name}
+	err = s.store.DB().Model(&models.User{}).Where("name = ?", name).First(&u).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	u.Score--
-	tx = s.store.DB().Model(&models.User{}).Where("name = ?", name).Update("score", u.Score)
-	if tx.Error != nil {
+	if u.Score <= 0 {
+		ctx.Status(http.StatusBadRequest)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": "the score cannot be less than 0."})
+	}
+
+	err = s.store.DB().Model(&models.User{}).Where("name = ?", name).Update("score", u.Score).Error
+	if err != nil {
 		ctx.Status(http.StatusNotFound)
-		return ctx.JSON(fiber.Map{"status": "fail", "error": tx.Error})
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	ctx.Status(http.StatusOK)
 	return ctx.JSON(fiber.Map{"status": "success", "data": u})
+}
+
+func (s *Server) handleClearUsers(ctx *fiber.Ctx) error {
+	var err error
+	var users []models.User
+
+	err = s.store.DB().Model(&models.User{}).Find(&users).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	err = s.store.DB().Model(&models.User{}).Unscoped().Delete(&users).Error
+	if err != nil {
+		ctx.Status(http.StatusInternalServerError)
+		return ctx.JSON(fiber.Map{"status": "fail", "error": err.Error()})
+	}
+
+	return ctx.JSON(fiber.Map{"status": "success", "data": users})
 }

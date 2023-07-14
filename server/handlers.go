@@ -19,20 +19,27 @@ func onlyAdmin(store storage.Storage, fn fiber.Handler) fiber.Handler {
 			return ctx.SendStatus(http.StatusUnauthorized)
 		}
 
+		var err error
+		var exists int64
 		var session models.Session
 
-		tx := store.DB().Model(&models.Session{}).Where("token = ?", strToken).First(&session)
-		if tx.Error != nil {
-			return ctx.SendStatus(http.StatusInternalServerError)
+		store.DB().Model(&models.Session{}).Where("token = ?", strToken).Count(&exists)
+		if exists == 0 {
+			return ctx.SendStatus(http.StatusUnauthorized)
+		}
+
+		err = store.DB().Model(&models.Session{}).Where("token = ?", strToken).First(&session).Error
+		if err != nil {
+			return ctx.SendStatus(http.StatusUnauthorized)
 		}
 
 		if (session.Expire - time.Now().UnixNano()) <= 0 {
-			tx = store.DB().Model(&models.Session{}).Unscoped().Delete(session)
-			if tx.Error != nil {
-				return ctx.SendStatus(http.StatusInternalServerError)
+			err = store.DB().Model(&models.Session{}).Unscoped().Delete(session).Error
+			if err != nil {
+				return ctx.SendStatus(http.StatusUnauthorized)
 			}
 
-			return ctx.SendStatus(http.StatusBadRequest)
+			return ctx.SendStatus(http.StatusUnauthorized)
 		}
 
 		return fn(ctx)

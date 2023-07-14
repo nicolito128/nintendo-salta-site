@@ -8,21 +8,26 @@
 
 html, body {
     margin: 0px;
-    width: 100vw;
-    height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
+    color: #111111;
 }
 
 body {
     background-color: rgba(243, 243, 243, 0.7);
     background: #f1f1f1;
+
+    display: grid;
+    grid-template-columns: 100%;
 }
 
 /* HEADER */
 header {
+    width: 100%;
     background-color: red;
-    margin: 0 auto;
     text-align: center;
-    padding: 1.5px;
+    margin:0 auto;
+    padding: 0;
 }
 
 .header-element {
@@ -45,8 +50,6 @@ header {
 main {
     margin: auto;
     text-align: justify;
-    width: 100%;
-    height: 100%;
 }
 
 .content-box {
@@ -62,18 +65,18 @@ main {
 }
 
 .container {
-    width: 100%;
     margin: auto;
     text-align: center;
 }
 
 .title {
     font-size: 3.5rem;
-    padding: 30px 30px; 
+    padding: 30px 30px;
     font-weight: bold;
+    text-align: center;
 }
 
-.ranking-table {
+.users-table {
     background: transparent;
     border: none;
     border-radius: 10px;
@@ -84,40 +87,40 @@ main {
     border-collapse: collapse
 }
 
-.ranking-table thead {
+.users-table thead {
     background: rgb(233, 57, 57);
     color: #ffffff;
 }
 
-.ranking-table th {
+.users-table th {
     font-weight: bold;
 }
 
-.ranking-table th,
-.ranking-table td {
+.users-table th,
+.users-table td {
     padding: 5px;
     height: 1.5rem;
     border-bottom: 1px solid rgb(233, 57, 57);
 }
 
-.ranking-table th:nth-child(2),
-.ranking-table td:nth-child(2),
-.ranking-table th:nth-child(3),
-.ranking-table td:nth-child(3) {
+.users-table th:nth-child(2),
+.users-table td:nth-child(2),
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) {
     width: 15rem;
 }
 
-.ranking-table th:nth-child(1),
-.ranking-table td:nth-child(1) {
+.users-table th:nth-child(1),
+.users-table td:nth-child(1) {
     width: 5rem;
 }
 
-.ranking-table thead th:nth-child(2), .ranking-table tbody td:nth-child(2) {
+.users-table thead th:nth-child(2), .users-table tbody td:nth-child(2) {
     border-right: 1px solid rgb(233, 57, 57);
     border-left: 1px solid rgb(233, 57, 57);
 }
 
-.ranking-table tbody tr:hover {
+.users-table tbody tr:hover {
     background: rgba(248, 186, 194, 0.9);
 }
 
@@ -134,12 +137,55 @@ footer {
     color: #fff;
 }
 
-.footer-box {
-    padding: 10px;
+p.footer-box {
+    margin:auto;
+    text-align: center;
 }
 
 .footer-box i {
     color: #fff;
     margin-top: 4rem;
     font-size: 1.5rem;
+}
+
+.blue-button {
+    text-decoration: none;
+    background: darkblue;
+    color: #f1f1f1;
+    border: 1px solid darkblue;
+    border-radius: 7px;
+    padding: 10px;
+    display: inline-block;
+    max-width: 10rem;
+    margin: 0.5rem 1.5rem;
+}
+
+.blue-button:hover {
+    background: #f1f1f1;
+    color: darkblue;
+}
+
+.red-button {
+    text-decoration: none;
+    background: red;
+    color: #fff;
+    padding: 10px;
+    border: 1px solid crimson;
+    border-radius: 7px;
+}
+
+.red-button:hover {
+    cursor: pointer;
+    background: #fff;
+    color: red;
+}
+
+
+.result-container {
+    margin-top: 1rem;
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: justify;
 }

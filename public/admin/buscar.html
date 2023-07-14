@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .title }} - Nintendo Salta</title>
+
+    {{ template "partials/common/metadata" .}}
+    <link rel="stylesheet" href="/styles/admin.css">
+</head>
+<body>
+    {{ template "partials/common/header" .}}
+
+    <div>
+        <h1 class="title">{{ .title }}</h1>
+    </div>
+
+    <main role="main" class="container content-box">
+
+        <p>
+            <input type="text" id="inputName" class="input-user" name="name" placeholder="Username" />
+        </p>
+
+        <p>
+            <br>
+            <button type="button" id="submitButton" class="red-button">Buscar</button>
+        </p>
+
+        <p>
+            <div id="userContainer" class="result-container"></div>
+        </p>
+    </main>
+
+
+    {{ template "partials/common/footer" .}}
+
+    <script>
+        const input = document.getElementById("inputName");
+        const button = document.getElementById('submitButton');
+        const container = document.getElementById("userContainer");
+
+        button.addEventListener('click', (e) => {
+            container.innerText = '';
+            const str = input.value;
+
+            htmx.ajax('GET', `/render/search/${str}`, '#userContainer');
+        });
+    </script>
+</body>
+</html>

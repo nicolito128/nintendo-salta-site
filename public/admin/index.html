@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}} - Nintendo Salta</title>
+
+    <link rel="stylesheet" href="styles/admin.css">
+    {{ template "partials/common/metadata" .}}
+</head>
+<body>
+
+    {{ template "partials/common/header" .}}
+
+    <div>
+        <h1 class="title">{{.title}}</h1>
+    </div>
+
+    <main role="main" class="content-box">
+            <div class="container buttons-box">
+                <a href="/admin/agregar" class="blue-button">Agregar participante</a>
+                <a href="/admin/modificar-puntaje" class="blue-button">Modificar puntaje</a>
+                <a href="/admin/buscar" class="blue-button">Buscar participante</a>
+                <a href="/admin/Eliminar" class="blue-button">Eliminar participante</a>
+                <a href="/admin/limpiar" class="blue-button">Limpiar participantes</a>
+            </div>
+    </main>
+    
+    {{ template "partials/common/footer" .}}
+</body>
+</html>

@@ -1,0 +1,19 @@
+
+h1.title {
+    text-align: center;
+}
+
+.buttons-box {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+}
+
+input.input-user {
+    margin: auto;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid grey;
+    padding: 10px;
+    display: block;
+}

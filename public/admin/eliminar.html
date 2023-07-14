@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .title }} - Nintendo Salta</title>
+
+    {{ template "partials/common/metadata" .}}
+    <link rel="stylesheet" href="/styles/admin.css">
+    <link rel="stylesheet" href="/styles/login.css">
+</head>
+<body>
+    {{ template "partials/common/header" .}}
+
+    <div>
+        <h1 class="title">{{ .title }}</h1>
+    </div>
+
+    <main role="main" class="container content-box">
+
+        <form>
+
+            <div class="form-body">
+                <div class="form-element">
+                    <input type="text" id="inputUser" name="name" placeholder="Nombre del participante" />
+                </div>
+
+                <div class="form-element submit">
+                    <button type="button" id="submitButton" class="red-button">Eliminar</button>
+                </div>
+            </div>
+
+        </form>
+
+        <div id="result" class="result-container"></div>
+
+    </main>
+
+
+    {{ template "partials/common/footer" .}}
+
+    <script>
+        const submit = document.getElementById('submitButton');
+
+        submit.addEventListener('click', (e) => {
+            sendData();
+        })
+
+        async function sendData() {
+            const input = document.getElementById('inputUser');
+            const result = document.getElementById('result');
+            if (input.value?.trim() == "") return;
+            let url = 'http://' + location.host + '/api/user';
+            let urlWithUser = url + `/${input.value}`;
+
+            let response = await fetch(urlWithUser)
+            .then(res => res.json())
+            .then(res => res);
+           
+            if (response.status !== 'success') {
+                result.innerText = 'No existe el usuario a eliminar.'
+                return;
+            }
+
+            const data = JSON.stringify({ "name": input.value });
+            const xhr = new XMLHttpRequest();
+            xhr.open("DELETE", urlWithUser, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+
+                if (this.status === 200) {
+                    result.innerHTML = `Participante eliminado con éxito. <b>${response?.data.name}</b> tenía <b>${response?.data.score} puntos</b> acumulados.`;
+                } else {
+                    result.innerText = 'No pudo eliminarse al participante, ya sea porque no existe o por un error interno.'
+                }
+            }
+
+            xhr.send(data)
+            setTimeout(() => {
+                console.log('await...');
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>

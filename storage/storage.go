@@ -23,7 +23,7 @@ func GetAll(ctx *fiber.Ctx, store Storage, dest interface{}, conds ...interface{
 		return store.DB()
 	}
 
-	scope := store.DB().Scopes(f)
+	scope := store.DB().Model(&dest).Scopes(f)
 	if scope.Error != nil {
 		return scope
 	}

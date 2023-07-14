@@ -8,6 +8,20 @@
     {{ template "partials/common/metadata" .}}
 
     <link rel="stylesheet" href="styles/login.css">
+
+    <script>
+        const exists = document.cookie.includes("token")
+        const url = 'http://' + location.host + '/admin'
+
+        if (exists) {
+            fetch(url)
+            .then(res => {
+                if (res && res.status !== 500 && res.status !== 400 && res.status !== 401) {
+                    location.replace(document.URL.replace("/login", "/admin"))
+                }
+            })
+        }
+    </script>
 </head>
 <body>
 
