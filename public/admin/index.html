@@ -29,7 +29,7 @@
     {{ template "partials/common/footer" .}}
 
     <script type="text/javascript">
-        async function redirect() {
+        async function clearCookies() {
             const exists = document.cookie.includes('token');
 
             if (exists) {
@@ -44,7 +44,7 @@
             }
         }
 
-        redirect();
+        clearCookies();
     </script>
 </body>
 </html>
