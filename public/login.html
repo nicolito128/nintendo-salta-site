@@ -10,23 +10,6 @@
     <link rel="stylesheet" href="styles/login.css">
 
     <script type="tex/javascript" src="{{.stie_location}}/assets/scripts/cookies.js"></script>
-    <script type="text/javascript">
-        async function redirect() {
-                const url = {{.site_location}} + '/admin';
-                const res = await fetch(url);
-                if (res) {
-                    if (res?.status === 401) {
-                        document.cookie = `token=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-                        document.cookie = `expire=;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
-                        return;
-                    }
-
-                    location.replace(url)
-                }
-        }
-
-        redirect();
-    </script>
 </head>
 <body>
 
